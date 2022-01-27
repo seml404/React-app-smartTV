@@ -1,0 +1,125 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+/*Обнуление*/
+*,
+p {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
+a,
+a:visited {
+  text-decoration: none;
+}
+
+ul,
+li {
+  margin: 0;
+}
+
+/* общие стили */
+body {
+  color: #ffffff;
+  font-family: "Roboto", "Times New Roman", sans-serif;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.wrapper {
+  max-width: 1280px;
+  height: 721px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.btn {
+  background: none;
+  width: 100%;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  border: none;
+}
+
+/* first screen */
+
+.iframe {
+  display: block;
+  border: none;
+  width: 1280px;
+  height: 721px;
+}
+
+.video-container {
+  position: relative;
+}
+
+.banner {
+  background-color: #86d3f4;
+  padding: 20px 10px;
+  width: 251px;
+  height: 357px;
+  text-align: center;
+  color: #000;
+}
+/* 
+.banner-small-container {
+  position: absolute;
+  top: 0;
+  width: 1280px;
+  height: 721px;
+  padding-top: 200px;
+} */
+
+.banner-small {
+  margin-left: auto;
+  position: absolute;
+  top: 200px;
+  right: 0px;
+}
+
+.banner-title {
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 18.75px;
+  padding-bottom: 20px;
+}
+
+.banner-code-container {
+  width: 126px;
+  height: 126px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+
+.banner-code-img {
+  display: block;
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+.banner-text {
+  padding-bottom: 20px;
+}
+
+.banner-btn {
+  display: flex;
+  padding: 16.5px 67px;
+  background-color: black;
+  justify-content: center;
+  align-items: center;
+  color: #86d3f4;
+}
+
+/* <iframe
+       
+className="iframe"
+src="https://www.youtube.com/embed/M7FIvfx5J10"
+title="YouTube video player"
+frameBorder="0"
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+allowFullScreen
+></iframe> */
