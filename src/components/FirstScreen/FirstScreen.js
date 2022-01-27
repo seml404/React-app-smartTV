@@ -3,8 +3,10 @@ import qr from "../../assets/qr.svg";
 import video from "../../assets/video.mp4";
 export default function FirstScreen(props) {
   let [bannerVisible, setBannerVisible] = useState(false);
+
   let videoItem = document.querySelector(".video");
   //   currentTime
+
   function handleOnPlay() {
     setTimeout(() => {
       setBannerVisible(true);
@@ -23,21 +25,26 @@ export default function FirstScreen(props) {
           onPlaying={() => handleOnPlay()}
         ></video>
       </div>
-      {bannerVisible && (
-        <div className="banner banner-small">
-          <div className="banner-title">
-            <p>Исполните мечту вашего малыша!</p>
-            <p>подарите ему собаку</p>
-          </div>
-          <div className="banner-code-container">
-            <img alt="banner-code-img" src={qr}></img>
-          </div>
-          <p className="banner-text">Сканируйте QR-код или нажмите OK</p>
-          <button className="btn banner-btn">
-            <p>OK</p>
-          </button>
+      <div
+        className={
+          bannerVisible
+            ? "banner banner-small show-small-show"
+            : "banner banner-small"
+        }
+      >
+        <div className="banner-title">
+          <p>Исполните мечту вашего малыша!</p>
+          <p>подарите ему собаку</p>
         </div>
-      )}
+        <div className="banner-code-container">
+          <img alt="banner-code-img" src={qr}></img>
+        </div>
+        <p className="banner-text">Сканируйте QR-код или нажмите OK</p>
+        <button className="btn btn-active">
+          <p>OK</p>
+        </button>
+      </div>
+      )
     </>
   );
 }
