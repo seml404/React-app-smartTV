@@ -45,11 +45,13 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 1px solid #4e4e4e;
 }
 
 .btn-active {
   background-color: black;
   color: #ffffff;
+  border: none;
 }
 
 /* first screen */
@@ -123,6 +125,12 @@ body {
 
 /* second screen */
 
+.check-box {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #000000;
+}
+
 .screen-container-back {
   width: 100%;
   height: 100%;
@@ -133,21 +141,92 @@ body {
 .banner-big {
   height: 100%;
   max-width: 381px;
+  justify-content: start;
+  padding-top: 72px;
 }
 
-.phone-number-line {
-  display: flex;
-  gap: 5px;
-  margin-bottom: 5px;
+.banner-big > .banner-title {
+  padding-bottom: 13px;
+  font-size: 26px;
+  line-height: 30.47px;
+  text-transform: none;
+  text-align: center;
 }
+
 .banner-number {
   font-size: 32px;
   line-height: 37px;
+  text-align: left;
+  padding-bottom: 13px;
 }
-.phone-number-item {
-  border: 1px solid black;
-  padding: 5px;
+
+.banner-text {
+  line-height: 16.41px;
+  text-align: center;
+  max-width: 337px;
+  padding-bottom: 33px;
 }
-.phone-number-item-active {
-  border: 1px solid red;
+
+.btn-banner {
+  max-width: 284px;
+  height: 52px;
+  color: #4e4e4e;
+  text-transform: uppercase;
+}
+
+.btn-banner.item-active {
+  background-color: black;
+  color: #ffffff;
+  border: none;
+}
+
+.check-box {
+  margin-right: 20px;
+}
+
+.check-box.item-active {
+  border: 3px solid black;
+}
+
+.check-box-container {
+  padding-bottom: 25px;
+  color: #565656;
+  display: flex;
+  align-items: center;
+}
+
+.keyboard-container {
+  display: block;
+  width: 100%;
+  max-width: 284px;
+  margin: 0 auto;
+  padding-bottom: 39px;
+}
+
+.keyboard-numbers-line {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  padding-bottom: 10px;
+}
+
+.keyboard-numbers-item {
+  border: 2px solid black;
+  width: 88px;
+  height: 52px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+}
+
+.keyboard-numbers-item.item-active {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.keyboard-numbers-item-word {
+  width: 186px;
 }
