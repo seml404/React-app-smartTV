@@ -137,11 +137,16 @@ body {
 
 .phone-number-line {
   display: flex;
-  gap: 4px;
+  gap: 5px;
+  margin-bottom: 5px;
 }
-
+.banner-number {
+  font-size: 32px;
+  line-height: 37px;
+}
 .phone-number-item {
   border: 1px solid black;
+  padding: 5px;
 }
 .phone-number-item-active {
   border: 1px solid red;
