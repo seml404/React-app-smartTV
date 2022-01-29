@@ -1,51 +1,94 @@
 import React, { Component } from "react";
 import check from "../../assets/check.svg";
-import {
-  renderNumbers,
-  renderNumSymbol,
-  renderPhoneNumber,
-} from "../../services";
+import { validatePhoneNumber } from "../../services";
 import background from "../../assets/screen-back.png";
+import { useNavigate } from "react-router-dom";
 
-export default class SecondScreen extends Component {
+class SecondScreenClassItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      phoneNumber: renderNumSymbol(),
+      phoneNumber: this.renderNumSymbol(),
       lastNumberIdx: 0,
       itemChoosen: { x: 0, y: 0 },
       keyCoordinates: "",
       navInitiated: false,
       numberFilled: false,
       permissionGranted: false,
+      numberIsFine: true,
     };
-    this.handleNumberClick = this.handleNumberClick.bind(this);
+    this.handleItemClick = this.handleItemClick.bind(this);
     this.definePhoneNumber = this.definePhoneNumber.bind(this);
     this.correctPhoneNumber = this.correctPhoneNumber.bind(this);
     this.renderLines = this.renderLines.bind(this);
     this.toggleActiveNumber = this.toggleActiveNumber.bind(this);
     this.handleNavigate = this.handleNavigate.bind(this);
+    this.handleNumBtnPush = this.handleNumBtnPush.bind(this);
   }
 
   componentDidMount() {
     document.querySelector("body").addEventListener("keydown", (e) => {
+      const { navInitiated, itemChoosen } = this.state;
       if (e.key.toLowerCase().includes("arrow")) {
+        if (navInitiated) {
+          this.toggleActiveNumber(itemChoosen);
+        } else {
+          this.setState({ navInitiated: true });
+        }
         this.handleNavigate(e);
-      } else if (!isNaN(+e.key) || e.key === "Backspace") {
-        this.handleNumberClick(e);
+      } else if (e.key === "Backspace") {
+        if (navInitiated) {
+          this.toggleActiveNumber(itemChoosen);
+        } else {
+          this.setState({ navInitiated: true });
+        }
+        this.correctPhoneNumber();
+        this.setState(() => {
+          this.toggleActiveNumber({ x: 0, y: 3 });
+          return { itemChoosen: { x: 0, y: 3 } };
+        });
       } else if (e.key === "Enter") {
-        this.handleSubmit(e);
+        this.handleEnterPush(e);
+      } else if (!isNaN(+e.key)) {
+        if (navInitiated) {
+          this.toggleActiveNumber(itemChoosen);
+        } else {
+          this.setState({ navInitiated: true });
+        }
+        this.handleNumBtnPush(e.key);
       }
     });
   }
 
-  handleNumberClick(e) {
-    if (e.target.innerHTML === "Стереть" || e.key === "Backspace") {
-      this.correctPhoneNumber();
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.phoneNumber !== this.state.phoneNumber) {
+      this.setState({ numberIsFine: true });
+      const { phoneNumber } = this.state;
+      if (!isNaN(phoneNumber[phoneNumber.length - 1])) {
+        this.setState({ numberFilled: true });
+      } else {
+        this.setState({ numberFilled: false });
+      }
+    }
+  }
+
+  correctPhoneNumber() {
+    const { lastNumberIdx } = this.state;
+    if (lastNumberIdx > 0) {
+      this.setState(({ phoneNumber }) => {
+        let newN = [...phoneNumber];
+        newN[lastNumberIdx] = "_";
+        return { phoneNumber: newN };
+      });
+      this.setState(({ lastNumberIdx }) => {
+        return { lastNumberIdx: lastNumberIdx - 1 };
+      });
     } else {
-      !isNaN(+e.key)
-        ? this.definePhoneNumber(e.key)
-        : this.definePhoneNumber(e.target.innerHTML);
+      this.setState(({ phoneNumber }) => {
+        let newN = [...phoneNumber];
+        newN[0] = "_";
+        return { phoneNumber: newN };
+      });
     }
   }
 
@@ -77,37 +120,79 @@ export default class SecondScreen extends Component {
     }
   }
 
-  correctPhoneNumber() {
-    const { lastNumberIdx } = this.state;
-    if (lastNumberIdx > 0) {
-      this.setState(({ phoneNumber }) => {
-        let newN = [...phoneNumber];
-        newN[lastNumberIdx] = "_";
-        return { phoneNumber: newN };
-      });
-      this.setState(({ lastNumberIdx }) => {
-        return { lastNumberIdx: lastNumberIdx - 1 };
-      });
-    } else {
-      this.setState(({ phoneNumber }) => {
-        let newN = [...phoneNumber];
-        newN[0] = "_";
-        return { phoneNumber: newN };
-      });
-    }
-  }
-
   renderLines() {
     let lines = [];
     for (let line = 0, startNumber = 1; line < 4; line++) {
       lines[line] = (
         <div className="keyboard-numbers-line" key={line + "line"}>
-          {renderNumbers(startNumber, line, this.handleNumberClick)}
+          {this.renderNumbers(startNumber, line, this.handleItemClick)}
         </div>
       );
       startNumber += 3;
     }
     return lines;
+  }
+
+  renderNumbers(value, line, handleClickFunction) {
+    let nums = [];
+    for (let i = 0; i < 3; i++, value++) {
+      switch (value) {
+        case 10:
+          nums.push(
+            <div
+              className="keyboard-numbers-item keyboard-numbers-item-word"
+              name="erase"
+              key={value}
+              id={"pn" + i + line}
+              onClick={(e) => handleClickFunction(e.target)}
+            >
+              Стереть
+            </div>
+          );
+          break;
+        case 11:
+          nums.push(
+            <div
+              className="keyboard-numbers-item"
+              name="0"
+              key={value}
+              id={"pn" + i + line}
+              onClick={(e) => handleClickFunction(e.target)}
+            >
+              0
+            </div>
+          );
+          break;
+        case 12:
+          break;
+        default:
+          nums.push(
+            <div
+              className="keyboard-numbers-item"
+              name={value}
+              key={value}
+              id={"pn" + i + line}
+              onClick={(e) => handleClickFunction(e.target)}
+            >
+              {value}
+            </div>
+          );
+          break;
+      }
+    }
+    return nums;
+  }
+
+  renderNumSymbol() {
+    let arr = [];
+    for (let i = 0; i < 10; i++) {
+      arr.push("_");
+    }
+    return arr;
+  }
+
+  renderPhoneNumber(number) {
+    return `+7(${number[0]}${number[1]}${number[2]})${number[3]}${number[4]}${number[5]}-${number[6]}${number[7]}-${number[8]}${number[9]}`;
   }
 
   toggleActiveNumber(obj) {
@@ -122,6 +207,47 @@ export default class SecondScreen extends Component {
     }));
   }
 
+  handleItemClick(itemClicked) {
+    const { navInitiated, itemChoosen } = this.state;
+    if (navInitiated) {
+      this.toggleActiveNumber(itemChoosen);
+    } else {
+      this.setState({ navInitiated: true });
+    }
+    if (itemClicked.innerHTML === "Стереть") {
+      this.correctPhoneNumber();
+      this.setState(() => {
+        this.toggleActiveNumber({ x: 0, y: 3 });
+        return { itemChoosen: { x: 0, y: 3 } };
+      });
+    } else if (
+      itemClicked.classList.contains("check-box") ||
+      itemClicked.classList.contains("check-box-checked")
+    ) {
+      this.togglePermission();
+      this.setState(() => {
+        this.toggleActiveNumber({ x: 0, y: 4 });
+        return { itemChoosen: { x: 0, y: 4 } };
+      });
+    } else if (
+      itemClicked.classList.contains("keyboard-numbers-item") &&
+      !isNaN(+itemClicked.innerHTML)
+    ) {
+      this.definePhoneNumber(itemClicked.innerHTML);
+      let coordinates = { x: +itemClicked.id[2], y: +itemClicked.id[3] };
+      this.setState(() => {
+        this.toggleActiveNumber(coordinates);
+        return { itemChoosen: coordinates };
+      });
+    } else if (itemClicked.classList.contains("btn-banner")) {
+      this.handleSubmit(itemClicked.disabled);
+      this.setState(() => {
+        this.toggleActiveNumber({ x: 0, y: 5 });
+        return { itemChoosen: { x: 0, y: 5 } };
+      });
+    }
+  }
+
   handleNavigate(e) {
     const { navInitiated, itemChoosen } = this.state;
     if (!navInitiated) {
@@ -134,14 +260,12 @@ export default class SecondScreen extends Component {
           if (itemChoosen.y === 4 || itemChoosen.y === 5) {
             break;
           } else if (itemChoosen.y !== 3 && itemChoosen.x === 2) {
-            this.toggleActiveNumber(itemChoosen);
             this.setState(({ itemChoosen }) => {
               this.toggleActiveNumber({ ...itemChoosen, x: 0 });
               return { itemChoosen: { ...itemChoosen, x: 0 } };
             });
             break;
           } else if (itemChoosen.y === 3) {
-            this.toggleActiveNumber(itemChoosen);
             if (itemChoosen.x === 1) {
               this.setState(({ itemChoosen }) => {
                 this.toggleActiveNumber({ ...itemChoosen, x: 0 });
@@ -161,7 +285,6 @@ export default class SecondScreen extends Component {
             }
             break;
           } else {
-            this.toggleActiveNumber(itemChoosen);
             this.setState(({ itemChoosen }) => {
               this.toggleActiveNumber({
                 ...itemChoosen,
@@ -178,7 +301,6 @@ export default class SecondScreen extends Component {
           if (itemChoosen.y === 4 || itemChoosen.y === 5) {
             break;
           } else if (itemChoosen.y === 3) {
-            this.toggleActiveNumber(itemChoosen);
             if (itemChoosen.x === 0) {
               this.setState(({ itemChoosen }) => {
                 this.toggleActiveNumber({ ...itemChoosen, x: 1 });
@@ -197,14 +319,12 @@ export default class SecondScreen extends Component {
               });
             }
           } else if (itemChoosen.x === 0) {
-            this.toggleActiveNumber(itemChoosen);
             this.setState(({ itemChoosen }) => {
               this.toggleActiveNumber({ ...itemChoosen, x: 2 });
               return { itemChoosen: { ...itemChoosen, x: 2 } };
             });
             break;
           } else {
-            this.toggleActiveNumber(itemChoosen);
             this.setState(({ itemChoosen }) => {
               this.toggleActiveNumber({ ...itemChoosen, x: itemChoosen.x - 1 });
               return { itemChoosen: { ...itemChoosen, x: itemChoosen.x - 1 } };
@@ -213,7 +333,6 @@ export default class SecondScreen extends Component {
           break;
         }
         case "down": {
-          this.toggleActiveNumber(itemChoosen);
           if (itemChoosen.y === 2) {
             if (itemChoosen.x !== 2) {
               this.setState(({ itemChoosen }) => {
@@ -250,7 +369,6 @@ export default class SecondScreen extends Component {
           break;
         }
         case "up": {
-          this.toggleActiveNumber(itemChoosen);
           if (itemChoosen.y === 0) {
             if (itemChoosen.x !== 2) {
               this.setState(({ itemChoosen }) => {
@@ -299,8 +417,42 @@ export default class SecondScreen extends Component {
     }
   }
 
+  handleSubmit = async function (disbaled) {
+    if (!disbaled) {
+      await validatePhoneNumber(this.state.phoneNumber, (value) =>
+        this.setState({ numberIsFine: value })
+      );
+      if (this.state.numberIsFine) {
+        this.props.navigate("/third");
+      }
+    }
+  };
+
+  handleEnterPush(e) {
+    const { navInitiated, itemChoosen } = this.state;
+    if (navInitiated) {
+      let btnPushed = document.querySelector(
+        `#pn${itemChoosen.x}${itemChoosen.y}`
+      );
+      this.handleItemClick(btnPushed);
+    }
+  }
+
+  handleNumBtnPush(num) {
+    this.definePhoneNumber(num);
+    let numKey = Array.from(
+      document.querySelectorAll(".keyboard-numbers-item")
+    ).filter((item) => item.innerHTML === num)[0];
+    let coordinates = { x: +numKey.id[2], y: +numKey.id[3] };
+    this.setState(() => {
+      this.toggleActiveNumber(coordinates);
+      return { itemChoosen: coordinates };
+    });
+  }
+
   render() {
-    const { permissionGranted } = this.state;
+    const { permissionGranted, numberFilled, numberIsFine } = this.state;
+
     return (
       <>
         <div
@@ -312,8 +464,12 @@ export default class SecondScreen extends Component {
               <p>Введите ваш номер </p>
               <p>мобильного телефона</p>
             </div>
-            <div className="banner-number">
-              {renderPhoneNumber(this.state.phoneNumber)}
+            <div
+              className={
+                numberIsFine ? "banner-number" : "banner-number error-item"
+              }
+            >
+              {this.renderPhoneNumber(this.state.phoneNumber)}
             </div>
             <p className="banner-text">
               и с Вами свяжется наш менеждер для дальнейшей консультации
@@ -323,9 +479,15 @@ export default class SecondScreen extends Component {
               <div
                 className="check-box"
                 id="pn04"
-                onClick={() => this.togglePermission()}
+                onClick={(e) => this.handleItemClick(e.target)}
               >
-                {permissionGranted && <img src={check}></img>}
+                {permissionGranted && (
+                  <img
+                    className="check-box-checked"
+                    src={check}
+                    alt="checked"
+                  ></img>
+                )}
               </div>
               <div className="check-box-text">
                 <p>Согласие на обработку</p>
@@ -333,12 +495,29 @@ export default class SecondScreen extends Component {
               </div>
             </div>
 
-            <button className="btn btn-banner" id="pn05">
-              <p>Подтвердить номер</p>
+            <button
+              className="btn btn-banner"
+              id="pn05"
+              disabled={numberFilled && permissionGranted ? false : true}
+              onClick={(e) => this.handleItemClick(e.target)}
+            >
+              Подтвердить номер
             </button>
+            {numberIsFine ? (
+              ""
+            ) : (
+              <p className="error-item error-alert">Неверно введен номер</p>
+            )}
           </div>
         </div>
       </>
     );
   }
 }
+
+function SecondScreen(props) {
+  const navigate = useNavigate();
+  return <SecondScreenClassItem {...props} navigate={navigate} />;
+}
+
+export default SecondScreen;

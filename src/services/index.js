@@ -1,62 +1,25 @@
-export function renderNumbers(value, line, handleClickFunction) {
-  console.log("used");
-  let nums = [];
-  for (let i = 0; i < 3; i++, value++) {
-    switch (value) {
-      case 10:
-        nums.push(
-          <div
-            className="keyboard-numbers-item keyboard-numbers-item-word"
-            name="erase"
-            key={value}
-            id={"pn" + i + line}
-            onClick={(e) => handleClickFunction(e)}
-          >
-            Стереть
-          </div>
-        );
-        break;
-      case 11:
-        nums.push(
-          <div
-            className="keyboard-numbers-item"
-            name="0"
-            key={value}
-            id={"pn" + i + line}
-            onClick={(e) => handleClickFunction(e)}
-          >
-            0
-          </div>
-        );
-        break;
-      case 12:
-        break;
-      default:
-        nums.push(
-          <div
-            className="keyboard-numbers-item"
-            name={value}
-            key={value}
-            id={"pn" + i + line}
-            onClick={(e) => handleClickFunction(e)}
-          >
-            {value}
-          </div>
-        );
-        break;
-    }
+export async function validatePhoneNumber(number, callback) {
+  number = `+7` + number.join("");
+  let url = `https://phonevalidation.abstractapi.com/v1/?api_key=054c94018977472a8fc90a351d114306&phone=${number}`;
+  function requesting(method, url) {
+    return new Promise((resolve) => {
+      var xhr = new XMLHttpRequest();
+      xhr.open(method, url);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          console.log(JSON.parse(xhr.responseText));
+          resolve(JSON.parse(xhr.responseText).valid);
+        }
+      };
+      xhr.send();
+    });
   }
-  return nums;
-}
-
-export function renderNumSymbol() {
-  let arr = [];
-  for (let i = 0; i < 10; i++) {
-    arr.push("_");
-  }
-  return arr;
-}
-
-export function renderPhoneNumber(number) {
-  return `+7(${number[0]}${number[1]}${number[2]})${number[3]}${number[4]}${number[5]}-${number[6]}${number[7]}-${number[8]}${number[9]}`;
+  let requestInProcess = await requesting("GET", url)
+    .then((data) => {
+      console.log(data);
+      callback(data);
+    })
+    .catch(function (err) {
+      console.error(err.statusText);
+    });
 }
