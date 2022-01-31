@@ -40,6 +40,7 @@ class FirstScreenClassItem extends Component {
   componentWillUnmount() {
     clearTimeout(this.state.timerId);
     let videoItem = document.querySelector(".video");
+    videoItem.pause();
     sessionStorage.setItem("timeMark", videoItem.currentTime);
   }
 
