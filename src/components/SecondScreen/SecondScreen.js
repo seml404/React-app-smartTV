@@ -25,43 +25,49 @@ class SecondScreenClassItem extends Component {
     this.toggleActiveItem = this.toggleActiveItem.bind(this);
     this.handleNavigate = this.handleNavigate.bind(this);
     this.handleNumBtnPush = this.handleNumBtnPush.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
+  }
+
+  // установка слушателей событий нажатия кнопок
+
+  onKeyDown(e) {
+    const { navInitiated, itemChoosen } = this.state;
+    if (e.key.toLowerCase().includes("arrow")) {
+      if (navInitiated) {
+        this.toggleActiveItem(itemChoosen);
+        this.handleNavigate(e);
+      } else {
+        this.setState({ navInitiated: true });
+        this.toggleActiveItem(itemChoosen);
+      }
+    } else if (e.key === "Backspace") {
+      if (navInitiated) {
+        this.toggleActiveItem(itemChoosen);
+      } else {
+        this.setState({ navInitiated: true });
+      }
+      this.correctPhoneNumber();
+      this.setState(() => {
+        this.toggleActiveItem({ x: 0, y: 3 });
+        return { itemChoosen: { x: 0, y: 3 } };
+      });
+    } else if (e.key === "Enter") {
+      this.handleEnterPush(e);
+    } else if (!isNaN(+e.key)) {
+      if (navInitiated) {
+        this.toggleActiveItem(itemChoosen);
+      } else {
+        this.setState({ navInitiated: true });
+      }
+      this.handleNumBtnPush(e.key);
+    }
   }
 
   componentDidMount() {
-    document.querySelector("body").addEventListener("keydown", (e) => {
-      const { navInitiated, itemChoosen } = this.state;
-      if (e.key.toLowerCase().includes("arrow")) {
-        if (navInitiated) {
-          this.toggleActiveItem(itemChoosen);
-          this.handleNavigate(e);
-        } else {
-          this.setState({ navInitiated: true });
-          this.toggleActiveItem(itemChoosen);
-        }
-      } else if (e.key === "Backspace") {
-        if (navInitiated) {
-          this.toggleActiveItem(itemChoosen);
-        } else {
-          this.setState({ navInitiated: true });
-        }
-        this.correctPhoneNumber();
-        this.setState(() => {
-          this.toggleActiveItem({ x: 0, y: 3 });
-          return { itemChoosen: { x: 0, y: 3 } };
-        });
-      } else if (e.key === "Enter") {
-        this.handleEnterPush(e);
-      } else if (!isNaN(+e.key)) {
-        if (navInitiated) {
-          this.toggleActiveItem(itemChoosen);
-        } else {
-          this.setState({ navInitiated: true });
-        }
-        this.handleNumBtnPush(e.key);
-      }
-    });
+    document.querySelector("body").addEventListener("keydown", this.onKeyDown);
   }
 
+  // вызов метода определения заполнения номера при каждом вводе цифры
   componentDidUpdate(prevProps, prevState) {
     if (prevState.phoneNumber !== this.state.phoneNumber) {
       this.setState({ numberIsFine: true });
@@ -74,6 +80,15 @@ class SecondScreenClassItem extends Component {
     }
   }
 
+  // удаление слушателей событий нажатия кнопок при размонтировании компонента
+  componentWillUnmount() {
+    console.log("done");
+    document
+      .querySelector("body")
+      .removeEventListener("keydown", this.onKeyDown);
+  }
+
+  // удаление последней цифры номера путем нажатия либо Backspace, либо клика по "стереть", либо наведения на кнопку "стереть" и нажатия клавиши Enter
   correctPhoneNumber() {
     const { lastNumberIdx } = this.state;
     if (lastNumberIdx > 0) {
@@ -94,6 +109,7 @@ class SecondScreenClassItem extends Component {
     }
   }
 
+  // функция записи номера при нажатии либо клавиш на клавиатуре, либо клика по цифрам на экранной клавиатуре, либо наведения на цифры и нажатия клавиши Enter
   definePhoneNumber(value) {
     const { phoneNumber, lastNumberIdx } = this.state;
     if (!isNaN(phoneNumber[lastNumberIdx])) {
@@ -122,6 +138,7 @@ class SecondScreenClassItem extends Component {
     }
   }
 
+  // метод отрисовки строк на экранной клавиатуре
   renderLines() {
     let lines = [];
     for (let line = 0, startNumber = 1; line < 4; line++) {
@@ -135,6 +152,7 @@ class SecondScreenClassItem extends Component {
     return lines;
   }
 
+  // метод отрисовки клавиш на экранной клавиатуре
   renderNumbers(value, line, handleClickFunction) {
     let nums = [];
     for (let i = 0; i < 3; i++, value++) {
@@ -184,7 +202,7 @@ class SecondScreenClassItem extends Component {
     }
     return nums;
   }
-
+  // метод отрисовки дефолтного значения телефонного номера
   renderNumSymbol() {
     let arr = [];
     for (let i = 0; i < 10; i++) {
@@ -192,23 +210,26 @@ class SecondScreenClassItem extends Component {
     }
     return arr;
   }
-
+  // метод отрисовки телефонного номера
   renderPhoneNumber(number) {
     return `+7(${number[0]}${number[1]}${number[2]})${number[3]}${number[4]}${number[5]}-${number[6]}${number[7]}-${number[8]}${number[9]}`;
   }
 
+  // метод указания активного (выбранного или нажатого) элемента на экранной клавиатуре, а также чекбока и основной кнопки
   toggleActiveItem(obj) {
     document
       .querySelector(`#pn${obj.x}${obj.y}`)
       .classList.toggle("item-active");
   }
 
+  // метод установки/отзыва дачи согласия на обработку персональных данных
   togglePermission() {
     this.setState(({ permissionGranted }) => ({
       permissionGranted: !permissionGranted,
     }));
   }
 
+  // метод обработки события клика по клавише на экранной клавиатуре (как мышью, так и путем наведения и нажатия на клавишу Enter)
   handleItemClick(itemClicked) {
     const { navInitiated, itemChoosen } = this.state;
     if (navInitiated) {
@@ -250,6 +271,7 @@ class SecondScreenClassItem extends Component {
     }
   }
 
+  //метод навигации по экранной клавиатуре и основным кнопкам с помощью нажатия стрелок на клавиатуре
   handleNavigate(e) {
     const { itemChoosen } = this.state;
     let direction = e.key.toLowerCase().substring(5);
@@ -434,6 +456,7 @@ class SecondScreenClassItem extends Component {
     }
   }
 
+  // метод обработки нажатия кнопки "Подтвердить номер"
   handleSubmit = async function (disbaled) {
     if (!disbaled) {
       await validatePhoneNumber(this.state.phoneNumber, (value) =>
@@ -445,6 +468,7 @@ class SecondScreenClassItem extends Component {
     }
   };
 
+  // метод обработки нажатия клавиши Enter
   handleEnterPush(e) {
     const { navInitiated, itemChoosen } = this.state;
     if (navInitiated) {
@@ -455,6 +479,7 @@ class SecondScreenClassItem extends Component {
     }
   }
 
+  // метод обработки нажатия клавиш c цифрами на клавиатуре
   handleNumBtnPush(num) {
     this.definePhoneNumber(num);
     let numKey = Array.from(
@@ -469,11 +494,10 @@ class SecondScreenClassItem extends Component {
 
   render() {
     const { permissionGranted, numberFilled, numberIsFine } = this.state;
-
     return (
       <>
         <div
-          className="screen-container-back"
+          className="screen-container-back second-screen"
           style={{ backgroundImage: `url(${background})` }}
         >
           <div className="banner banner-big">
@@ -545,6 +569,7 @@ class SecondScreenClassItem extends Component {
   }
 }
 
+// оборачивание в функциональный компонент для возможности использования хуков react-router в классовом компоненте
 function SecondScreen(props) {
   const navigate = useNavigate();
   return <SecondScreenClassItem {...props} navigate={navigate} />;

@@ -14,19 +14,31 @@ export default class ThirdScreenSlider extends Component {
       navInitiated: false,
     };
     this.handleArrowBtnClick = this.handleArrowBtnClick.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
+  }
+
+  // установка слушателей событий нажатия на клавиатуре клавиш-стрелок для навигации
+  onKeyDown(e) {
+    if (e.key.toLowerCase().includes("arrow")) {
+      let direction = e.key.toLowerCase().substring(5);
+      if (direction === "left") {
+        this.handleArrowBtnClick("left");
+      } else if (direction === "right") this.handleArrowBtnClick("right");
+    }
   }
 
   componentDidMount() {
-    document.querySelector("body").addEventListener("keydown", (e) => {
-      if (e.key.toLowerCase().includes("arrow")) {
-        let direction = e.key.toLowerCase().substring(5);
-        if (direction === "left") {
-          this.handleArrowBtnClick("left");
-        } else if (direction === "right") this.handleArrowBtnClick("right");
-      }
-    });
+    document.querySelector("body").addEventListener("keydown", this.onKeyDown);
   }
 
+  // удаление слушателей событий нажатия кнопок при размонтировании компонента
+  componentWillUnmount() {
+    document
+      .querySelector("body")
+      .removeEventListener("keydown", this.onKeyDown);
+  }
+
+  // метод навигации между слайдами как путем нажатия клавиш на клавиатуре, так и путем клика по кнопкам
   handleArrowBtnClick(direction) {
     const { slidePosition, itemChoosen, navInitiated } = this.state;
     if (!navInitiated) {
@@ -53,6 +65,7 @@ export default class ThirdScreenSlider extends Component {
     }
   }
 
+  // метод указания активного (выбранного или нажатого) элемента на экранной клавиатуре, а также чекбока и основной кнопки
   toggleActiveItem(obj) {
     document
       .querySelector(`#pn${obj.x}${obj.y}`)

@@ -12,9 +12,9 @@ class FirstScreenClassItem extends Component {
       timerId: null,
     };
     this.handleOnPlay = this.handleOnPlay.bind(this);
-    this.handleVideoPaused = this.handleVideoPaused.bind(this);
   }
 
+  // установщик таймера для показа всплывающего окна
   handleOnPlay() {
     if (this.state.timerId) {
       clearTimeout(this.state.timerId);
@@ -25,29 +25,28 @@ class FirstScreenClassItem extends Component {
     this.setState({ timerId: value });
   }
 
+  // в случае нахождения в сессионном хранилище данных о последнем времени просмотра видео оно продолжит воспроизводиться с этого момента
   componentDidMount() {
     let videoItem = document.querySelector(".video");
-    if (localStorage.timeMark) {
-      videoItem.currentTime = +localStorage.timeMark;
+    if (sessionStorage.timeMark) {
+      videoItem.currentTime = +sessionStorage.timeMark;
       videoItem.play();
     } else {
       videoItem.play();
     }
   }
 
+  // при переходе на другую страницу в сессионное хранилище данных записываются сведения о времени, на котором находилось видео
   componentWillUnmount() {
     clearTimeout(this.state.timerId);
     let videoItem = document.querySelector(".video");
-    localStorage.setItem("timeMark", videoItem.currentTime);
+    sessionStorage.setItem("timeMark", videoItem.currentTime);
   }
 
+  // обработчик клика по кнопке для навигации на следующую страницу
   handleNavigate() {
-    let videoItem = document.querySelector(".video");
-    localStorage.setItem("timeMark", videoItem.currentTime);
     this.props.navigate("/second");
   }
-
-  handleVideoPaused() {}
 
   render() {
     return (
@@ -60,7 +59,6 @@ class FirstScreenClassItem extends Component {
             muted
             controls
             onPlaying={() => this.handleOnPlay()}
-            onPause={() => this.handleVideoPaused()}
           ></video>
         </div>
         <div
@@ -90,6 +88,7 @@ class FirstScreenClassItem extends Component {
   }
 }
 
+// оборачивание в функциональный компонент для возможности использования хуков react-router в классовом компоненте
 function FirstScreen(props) {
   const navigate = useNavigate();
   return <FirstScreenClassItem {...props} navigate={navigate} />;

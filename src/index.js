@@ -15,6 +15,5 @@ ReactDOM.render(
       </Router>
     </ErrorBoundry>
   </Provider>,
-
   document.getElementById("root")
 );
