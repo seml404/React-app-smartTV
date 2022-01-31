@@ -45,7 +45,7 @@ class FirstScreenClassItem extends Component {
 
   // обработчик клика по кнопке для навигации на следующую страницу
   handleNavigate() {
-    this.props.navigate("/second");
+    this.props.navigate("/second/");
   }
 
   render() {

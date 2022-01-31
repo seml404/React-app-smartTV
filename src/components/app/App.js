@@ -10,10 +10,10 @@ const App = () => {
     <>
       <div className="wrapper">
         <Routes>
-          <Route path="/" exact element={<FirstScreen />}></Route>
-          <Route path="/second" element={<SecondScreen />}></Route>
-          <Route path="/third" element={<ThirdScreen />}></Route>
-          <Route path="/third-slider" element={<ThirdScreenSlider />}></Route>
+          <Route exact path="/" element={<FirstScreen />}></Route>
+          <Route path="/second/" element={<SecondScreen />}></Route>
+          <Route path="/third/" element={<ThirdScreen />}></Route>
+          <Route path="/third-slider/" element={<ThirdScreenSlider />}></Route>
         </Routes>
       </div>
     </>

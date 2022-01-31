@@ -463,7 +463,7 @@ class SecondScreenClassItem extends Component {
         this.setState({ numberIsFine: value })
       );
       if (this.state.numberIsFine) {
-        this.props.navigate("/third-slider");
+        this.props.navigate("/third-slider/");
       }
     }
   };
