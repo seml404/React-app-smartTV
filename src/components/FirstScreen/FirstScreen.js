@@ -22,7 +22,6 @@ class FirstScreenClassItem extends Component {
     let value = setTimeout(() => {
       this.setState({ bannerVisible: true });
     }, 5000);
-    console.log(value);
     this.setState({ timerId: value });
   }
 

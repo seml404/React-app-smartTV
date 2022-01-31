@@ -3,6 +3,7 @@ import check from "../../assets/check.svg";
 import { validatePhoneNumber } from "../../services";
 import background from "../../assets/screen-back.png";
 import { useNavigate } from "react-router-dom";
+import qr from "../../assets/qr.svg";
 
 class SecondScreenClassItem extends Component {
   constructor(props) {
@@ -21,7 +22,7 @@ class SecondScreenClassItem extends Component {
     this.definePhoneNumber = this.definePhoneNumber.bind(this);
     this.correctPhoneNumber = this.correctPhoneNumber.bind(this);
     this.renderLines = this.renderLines.bind(this);
-    this.toggleActiveNumber = this.toggleActiveNumber.bind(this);
+    this.toggleActiveItem = this.toggleActiveItem.bind(this);
     this.handleNavigate = this.handleNavigate.bind(this);
     this.handleNumBtnPush = this.handleNumBtnPush.bind(this);
   }
@@ -31,27 +32,28 @@ class SecondScreenClassItem extends Component {
       const { navInitiated, itemChoosen } = this.state;
       if (e.key.toLowerCase().includes("arrow")) {
         if (navInitiated) {
-          this.toggleActiveNumber(itemChoosen);
+          this.toggleActiveItem(itemChoosen);
+          this.handleNavigate(e);
         } else {
           this.setState({ navInitiated: true });
+          this.toggleActiveItem(itemChoosen);
         }
-        this.handleNavigate(e);
       } else if (e.key === "Backspace") {
         if (navInitiated) {
-          this.toggleActiveNumber(itemChoosen);
+          this.toggleActiveItem(itemChoosen);
         } else {
           this.setState({ navInitiated: true });
         }
         this.correctPhoneNumber();
         this.setState(() => {
-          this.toggleActiveNumber({ x: 0, y: 3 });
+          this.toggleActiveItem({ x: 0, y: 3 });
           return { itemChoosen: { x: 0, y: 3 } };
         });
       } else if (e.key === "Enter") {
         this.handleEnterPush(e);
       } else if (!isNaN(+e.key)) {
         if (navInitiated) {
-          this.toggleActiveNumber(itemChoosen);
+          this.toggleActiveItem(itemChoosen);
         } else {
           this.setState({ navInitiated: true });
         }
@@ -195,7 +197,7 @@ class SecondScreenClassItem extends Component {
     return `+7(${number[0]}${number[1]}${number[2]})${number[3]}${number[4]}${number[5]}-${number[6]}${number[7]}-${number[8]}${number[9]}`;
   }
 
-  toggleActiveNumber(obj) {
+  toggleActiveItem(obj) {
     document
       .querySelector(`#pn${obj.x}${obj.y}`)
       .classList.toggle("item-active");
@@ -210,14 +212,14 @@ class SecondScreenClassItem extends Component {
   handleItemClick(itemClicked) {
     const { navInitiated, itemChoosen } = this.state;
     if (navInitiated) {
-      this.toggleActiveNumber(itemChoosen);
+      this.toggleActiveItem(itemChoosen);
     } else {
       this.setState({ navInitiated: true });
     }
     if (itemClicked.innerHTML === "Стереть") {
       this.correctPhoneNumber();
       this.setState(() => {
-        this.toggleActiveNumber({ x: 0, y: 3 });
+        this.toggleActiveItem({ x: 0, y: 3 });
         return { itemChoosen: { x: 0, y: 3 } };
       });
     } else if (
@@ -226,7 +228,7 @@ class SecondScreenClassItem extends Component {
     ) {
       this.togglePermission();
       this.setState(() => {
-        this.toggleActiveNumber({ x: 0, y: 4 });
+        this.toggleActiveItem({ x: 0, y: 4 });
         return { itemChoosen: { x: 0, y: 4 } };
       });
     } else if (
@@ -236,57 +238,51 @@ class SecondScreenClassItem extends Component {
       this.definePhoneNumber(itemClicked.innerHTML);
       let coordinates = { x: +itemClicked.id[2], y: +itemClicked.id[3] };
       this.setState(() => {
-        this.toggleActiveNumber(coordinates);
+        this.toggleActiveItem(coordinates);
         return { itemChoosen: coordinates };
       });
     } else if (itemClicked.classList.contains("btn-banner")) {
       this.handleSubmit(itemClicked.disabled);
       this.setState(() => {
-        this.toggleActiveNumber({ x: 0, y: 5 });
+        this.toggleActiveItem({ x: 0, y: 5 });
         return { itemChoosen: { x: 0, y: 5 } };
       });
     }
   }
 
   handleNavigate(e) {
-    const { navInitiated, itemChoosen } = this.state;
-    if (!navInitiated) {
-      this.toggleActiveNumber(itemChoosen);
-      this.setState({ navInitiated: true });
-    } else {
-      let direction = e.key.toLowerCase().substring(5);
-      switch (direction) {
-        case "right": {
-          if (itemChoosen.y === 4 || itemChoosen.y === 5) {
-            break;
-          } else if (itemChoosen.y !== 3 && itemChoosen.x === 2) {
+    const { itemChoosen } = this.state;
+    let direction = e.key.toLowerCase().substring(5);
+    switch (direction) {
+      case "right": {
+        if (itemChoosen.y === 4) {
+          this.setState(({ itemChoosen }) => {
+            this.toggleActiveItem({ x: 0, y: 4 });
+            return { itemChoosen: { x: 0, y: 4 } };
+          });
+          break;
+        } else if (itemChoosen.y === 5) {
+          this.setState(({ itemChoosen }) => {
+            this.toggleActiveItem({ x: 0, y: 5 });
+            return { itemChoosen: { x: 0, y: 5 } };
+          });
+          break;
+        } else if (itemChoosen.y !== 3 && itemChoosen.x === 2) {
+          this.setState(({ itemChoosen }) => {
+            this.toggleActiveItem({ ...itemChoosen, x: 0 });
+            return { itemChoosen: { ...itemChoosen, x: 0 } };
+          });
+          break;
+        } else if (itemChoosen.y === 3) {
+          if (itemChoosen.x === 1) {
             this.setState(({ itemChoosen }) => {
-              this.toggleActiveNumber({ ...itemChoosen, x: 0 });
+              this.toggleActiveItem({ ...itemChoosen, x: 0 });
               return { itemChoosen: { ...itemChoosen, x: 0 } };
             });
             break;
-          } else if (itemChoosen.y === 3) {
-            if (itemChoosen.x === 1) {
-              this.setState(({ itemChoosen }) => {
-                this.toggleActiveNumber({ ...itemChoosen, x: 0 });
-                return { itemChoosen: { ...itemChoosen, x: 0 } };
-              });
-              break;
-            } else {
-              this.setState(({ itemChoosen }) => {
-                this.toggleActiveNumber({
-                  ...itemChoosen,
-                  x: itemChoosen.x + 1,
-                });
-                return {
-                  itemChoosen: { ...itemChoosen, x: itemChoosen.x + 1 },
-                };
-              });
-            }
-            break;
           } else {
             this.setState(({ itemChoosen }) => {
-              this.toggleActiveNumber({
+              this.toggleActiveItem({
                 ...itemChoosen,
                 x: itemChoosen.x + 1,
               });
@@ -294,125 +290,146 @@ class SecondScreenClassItem extends Component {
                 itemChoosen: { ...itemChoosen, x: itemChoosen.x + 1 },
               };
             });
-            break;
           }
+          break;
+        } else {
+          this.setState(({ itemChoosen }) => {
+            this.toggleActiveItem({
+              ...itemChoosen,
+              x: itemChoosen.x + 1,
+            });
+            return {
+              itemChoosen: { ...itemChoosen, x: itemChoosen.x + 1 },
+            };
+          });
+          break;
         }
-        case "left": {
-          if (itemChoosen.y === 4 || itemChoosen.y === 5) {
-            break;
-          } else if (itemChoosen.y === 3) {
-            if (itemChoosen.x === 0) {
-              this.setState(({ itemChoosen }) => {
-                this.toggleActiveNumber({ ...itemChoosen, x: 1 });
-                return { itemChoosen: { ...itemChoosen, x: 1 } };
-              });
-              break;
-            } else {
-              this.setState(({ itemChoosen }) => {
-                this.toggleActiveNumber({
-                  ...itemChoosen,
-                  x: itemChoosen.x - 1,
-                });
-                return {
-                  itemChoosen: { ...itemChoosen, x: itemChoosen.x - 1 },
-                };
-              });
-            }
-          } else if (itemChoosen.x === 0) {
+      }
+      case "left": {
+        if (itemChoosen.y === 4) {
+          this.setState(({ itemChoosen }) => {
+            this.toggleActiveItem({ x: 0, y: 4 });
+            return { itemChoosen: { x: 0, y: 4 } };
+          });
+          break;
+        } else if (itemChoosen.y === 5) {
+          this.setState(({ itemChoosen }) => {
+            this.toggleActiveItem({ x: 0, y: 5 });
+            return { itemChoosen: { x: 0, y: 5 } };
+          });
+          break;
+        } else if (itemChoosen.y === 3) {
+          if (itemChoosen.x === 0) {
             this.setState(({ itemChoosen }) => {
-              this.toggleActiveNumber({ ...itemChoosen, x: 2 });
-              return { itemChoosen: { ...itemChoosen, x: 2 } };
+              this.toggleActiveItem({ ...itemChoosen, x: 1 });
+              return { itemChoosen: { ...itemChoosen, x: 1 } };
             });
             break;
           } else {
             this.setState(({ itemChoosen }) => {
-              this.toggleActiveNumber({ ...itemChoosen, x: itemChoosen.x - 1 });
-              return { itemChoosen: { ...itemChoosen, x: itemChoosen.x - 1 } };
+              this.toggleActiveItem({
+                ...itemChoosen,
+                x: itemChoosen.x - 1,
+              });
+              return {
+                itemChoosen: { ...itemChoosen, x: itemChoosen.x - 1 },
+              };
             });
           }
+        } else if (itemChoosen.x === 0) {
+          this.setState(({ itemChoosen }) => {
+            this.toggleActiveItem({ ...itemChoosen, x: 2 });
+            return { itemChoosen: { ...itemChoosen, x: 2 } };
+          });
           break;
+        } else {
+          this.setState(({ itemChoosen }) => {
+            this.toggleActiveItem({ ...itemChoosen, x: itemChoosen.x - 1 });
+            return { itemChoosen: { ...itemChoosen, x: itemChoosen.x - 1 } };
+          });
         }
-        case "down": {
-          if (itemChoosen.y === 2) {
-            if (itemChoosen.x !== 2) {
-              this.setState(({ itemChoosen }) => {
-                this.toggleActiveNumber({ x: 0, y: 3 });
-                return { itemChoosen: { x: 0, y: 3 } };
-              });
-            } else {
-              this.setState(({ itemChoosen }) => {
-                this.toggleActiveNumber({ x: 1, y: 3 });
-                return { itemChoosen: { x: 1, y: 3 } };
-              });
-            }
-          } else if (itemChoosen.y === 3) {
-            this.setState(() => {
-              this.toggleActiveNumber({ x: 0, y: 4 });
-              return { itemChoosen: { x: 0, y: 4 } };
-            });
-          } else if (itemChoosen.y === 4) {
-            this.setState(() => {
-              this.toggleActiveNumber({ x: 0, y: 5 });
-              return { itemChoosen: { x: 0, y: 5 } };
-            });
-          } else if (itemChoosen.y === 5) {
-            this.setState(() => {
-              this.toggleActiveNumber({ x: 0, y: 0 });
-              return { itemChoosen: { x: 0, y: 0 } };
-            });
-          } else {
+        break;
+      }
+      case "down": {
+        if (itemChoosen.y === 2) {
+          if (itemChoosen.x !== 2) {
             this.setState(({ itemChoosen }) => {
-              this.toggleActiveNumber({ ...itemChoosen, y: itemChoosen.y + 1 });
-              return { itemChoosen: { ...itemChoosen, y: itemChoosen.y + 1 } };
-            });
-          }
-          break;
-        }
-        case "up": {
-          if (itemChoosen.y === 0) {
-            if (itemChoosen.x !== 2) {
-              this.setState(({ itemChoosen }) => {
-                this.toggleActiveNumber({ x: 0, y: 5 });
-                return { itemChoosen: { x: 0, y: 5 } };
-              });
-            } else {
-              this.setState(({ itemChoosen }) => {
-                this.toggleActiveNumber({ x: 1, y: 3 });
-                return { itemChoosen: { x: 1, y: 3 } };
-              });
-            }
-          } else if (itemChoosen.y === 3) {
-            if (itemChoosen.x !== 1) {
-              this.setState(({ itemChoosen }) => {
-                this.toggleActiveNumber({ x: 0, y: 2 });
-                return { itemChoosen: { x: 0, y: 2 } };
-              });
-            } else {
-              this.setState(({ itemChoosen }) => {
-                this.toggleActiveNumber({ x: 2, y: 2 });
-                return { itemChoosen: { x: 2, y: 2 } };
-              });
-            }
-          } else if (itemChoosen.y === 4) {
-            this.setState(() => {
-              this.toggleActiveNumber({ x: 0, y: 3 });
+              this.toggleActiveItem({ x: 0, y: 3 });
               return { itemChoosen: { x: 0, y: 3 } };
             });
-          } else if (itemChoosen.y === 5) {
-            this.setState(() => {
-              this.toggleActiveNumber({ x: 0, y: 4 });
-              return { itemChoosen: { x: 0, y: 4 } };
+          } else {
+            this.setState(({ itemChoosen }) => {
+              this.toggleActiveItem({ x: 1, y: 3 });
+              return { itemChoosen: { x: 1, y: 3 } };
+            });
+          }
+        } else if (itemChoosen.y === 3) {
+          this.setState(() => {
+            this.toggleActiveItem({ x: 0, y: 4 });
+            return { itemChoosen: { x: 0, y: 4 } };
+          });
+        } else if (itemChoosen.y === 4) {
+          this.setState(() => {
+            this.toggleActiveItem({ x: 0, y: 5 });
+            return { itemChoosen: { x: 0, y: 5 } };
+          });
+        } else if (itemChoosen.y === 5) {
+          this.setState(() => {
+            this.toggleActiveItem({ x: 0, y: 0 });
+            return { itemChoosen: { x: 0, y: 0 } };
+          });
+        } else {
+          this.setState(({ itemChoosen }) => {
+            this.toggleActiveItem({ ...itemChoosen, y: itemChoosen.y + 1 });
+            return { itemChoosen: { ...itemChoosen, y: itemChoosen.y + 1 } };
+          });
+        }
+        break;
+      }
+      case "up": {
+        if (itemChoosen.y === 0) {
+          if (itemChoosen.x !== 2) {
+            this.setState(({ itemChoosen }) => {
+              this.toggleActiveItem({ x: 0, y: 5 });
+              return { itemChoosen: { x: 0, y: 5 } };
             });
           } else {
             this.setState(({ itemChoosen }) => {
-              this.toggleActiveNumber({ ...itemChoosen, y: itemChoosen.y - 1 });
-              return { itemChoosen: { ...itemChoosen, y: itemChoosen.y - 1 } };
+              this.toggleActiveItem({ x: 1, y: 3 });
+              return { itemChoosen: { x: 1, y: 3 } };
             });
           }
-          break;
+        } else if (itemChoosen.y === 3) {
+          if (itemChoosen.x !== 1) {
+            this.setState(({ itemChoosen }) => {
+              this.toggleActiveItem({ x: 0, y: 2 });
+              return { itemChoosen: { x: 0, y: 2 } };
+            });
+          } else {
+            this.setState(({ itemChoosen }) => {
+              this.toggleActiveItem({ x: 2, y: 2 });
+              return { itemChoosen: { x: 2, y: 2 } };
+            });
+          }
+        } else if (itemChoosen.y === 4) {
+          this.setState(() => {
+            this.toggleActiveItem({ x: 0, y: 3 });
+            return { itemChoosen: { x: 0, y: 3 } };
+          });
+        } else if (itemChoosen.y === 5) {
+          this.setState(() => {
+            this.toggleActiveItem({ x: 0, y: 4 });
+            return { itemChoosen: { x: 0, y: 4 } };
+          });
+        } else {
+          this.setState(({ itemChoosen }) => {
+            this.toggleActiveItem({ ...itemChoosen, y: itemChoosen.y - 1 });
+            return { itemChoosen: { ...itemChoosen, y: itemChoosen.y - 1 } };
+          });
         }
-        default: {
-        }
+        break;
+      }
+      default: {
       }
     }
   }
@@ -423,7 +440,7 @@ class SecondScreenClassItem extends Component {
         this.setState({ numberIsFine: value })
       );
       if (this.state.numberIsFine) {
-        this.props.navigate("/third");
+        this.props.navigate("/third-slider");
       }
     }
   };
@@ -445,7 +462,7 @@ class SecondScreenClassItem extends Component {
     ).filter((item) => item.innerHTML === num)[0];
     let coordinates = { x: +numKey.id[2], y: +numKey.id[3] };
     this.setState(() => {
-      this.toggleActiveNumber(coordinates);
+      this.toggleActiveItem(coordinates);
       return { itemChoosen: coordinates };
     });
   }
@@ -475,39 +492,52 @@ class SecondScreenClassItem extends Component {
               и с Вами свяжется наш менеждер для дальнейшей консультации
             </p>
             <div className="keyboard-container">{this.renderLines()}</div>
+
             <div className="check-box-container">
-              <div
-                className="check-box"
-                id="pn04"
-                onClick={(e) => this.handleItemClick(e.target)}
-              >
-                {permissionGranted && (
-                  <img
-                    className="check-box-checked"
-                    src={check}
-                    alt="checked"
-                  ></img>
-                )}
-              </div>
-              <div className="check-box-text">
-                <p>Согласие на обработку</p>
-                <p>персональных данных</p>
-              </div>
+              {numberIsFine ? (
+                <>
+                  <div
+                    className="check-box"
+                    id="pn04"
+                    onClick={(e) => this.handleItemClick(e.target)}
+                  >
+                    {permissionGranted && (
+                      <img
+                        className="check-box-checked"
+                        src={check}
+                        alt="checked"
+                      ></img>
+                    )}
+                  </div>
+                  <div className="check-box-text">
+                    <p>Согласие на обработку</p>
+                    <p>персональных данных</p>
+                  </div>
+                </>
+              ) : (
+                <p className="error-item error-alert">Неверно введен номер</p>
+              )}
             </div>
 
             <button
               className="btn btn-banner"
               id="pn05"
-              disabled={numberFilled && permissionGranted ? false : true}
+              disabled={
+                numberFilled && permissionGranted && numberIsFine ? false : true
+              }
               onClick={(e) => this.handleItemClick(e.target)}
             >
-              Подтвердить номер
+              {numberIsFine ? "Подтвердить номер" : null}
             </button>
-            {numberIsFine ? (
-              ""
-            ) : (
-              <p className="error-item error-alert">Неверно введен номер</p>
-            )}
+          </div>
+        </div>
+        <button className="btn btn-close">&#10006; </button>
+        <div className="info-box">
+          <p className="info-box-text">
+            Сканируйте QR-код ДЛЯ ПОЛУЧЕНИЯ ДОПОЛНИТЕЛЬНОЙ ИНФОРМАЦИИ
+          </p>
+          <div className="banner-code-container">
+            <img alt="banner-code-img" src={qr}></img>
           </div>
         </div>
       </>

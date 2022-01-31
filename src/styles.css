@@ -29,7 +29,7 @@ body {
 }
 
 .wrapper {
-  max-width: 1280px;
+  width: 1280px;
   height: 721px;
   margin: 0 auto;
   position: relative;
@@ -46,6 +46,7 @@ body {
   justify-content: center;
   align-items: center;
   border: 1px solid #4e4e4e;
+  cursor: pointer;
 }
 
 .btn-active {
@@ -54,8 +55,35 @@ body {
   border: none;
 }
 
+.btn-close {
+  position: absolute;
+  width: 88px;
+  height: 52px;
+  border: 2px solid #000000;
+  background-color: #ffffff;
+  top: 20px;
+  right: 20px;
+}
+
 .error-item {
   color: red;
+}
+
+.info-box {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+}
+
+.info-box-text {
+  max-width: 204px;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  padding: 17px 10px;
+  text-align: right;
 }
 
 /* first screen */
@@ -143,7 +171,7 @@ body {
   padding-top: 72px;
 }
 
-.banner-big > .banner-title {
+.banner-big .banner-title {
   padding-bottom: 13px;
   font-size: 26px;
   line-height: 30.47px;
@@ -206,6 +234,13 @@ body {
   display: flex;
   align-items: center;
 }
+.error-alert {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  text-transform: uppercase;
+  text-align: center;
+}
 
 .keyboard-container {
   display: block;
@@ -241,4 +276,67 @@ body {
 
 .keyboard-numbers-item-word {
   width: 186px;
+}
+
+/* third screen - with no slider */
+
+.banner-title.banner-title-big {
+  padding-top: 193px;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 32px;
+  line-height: 37px;
+  padding-bottom: 15px;
+}
+
+.banner-text.banner-text-info {
+  padding: 0;
+}
+
+/* third screen - slider */
+
+.slider {
+  height: 721px;
+  width: 1280px;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid black;
+}
+
+.slider-items {
+  height: 721px;
+  width: 1280px;
+  display: flex;
+  position: absolute;
+  transition: 1s all ease-in;
+}
+
+.slider-item {
+  height: 721px;
+  width: 1280px;
+}
+
+.slider-item img {
+  width: 1280px;
+}
+
+.nav-buttons-container {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  display: flex;
+  gap: 5px;
+}
+
+.nav-buttons-btn {
+  border: none;
+  width: 72px;
+  height: 36px;
+  background: #e8e8e8;
+  transform: skew(-30deg, 0);
+}
+
+.nav-buttons-btn.item-active {
+  background-color: black;
+  color: #ffffff;
 }
